@@ -765,14 +765,14 @@ async function loadData() {
             updateMemoryWall();
         }
 
-        function updateMasterPassword() {
+        async function updateMasterPassword() {
             var newPassword = document.getElementById('adminMasterPassword').value.trim();
             if (!newPassword) {
                 alert('Please enter a new master password');
                 return;
             }
             app.customMasterPassword = newPassword;
-            saveData();
+            localStorage.setItem('springMemories_masterPassword', newPassword);
             document.getElementById('adminMasterPassword').value = '';
             alert('Master password updated to: ' + newPassword);
         }
