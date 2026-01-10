@@ -449,9 +449,8 @@ async function loadData() {
     
     document.getElementById('entryScreen').classList.remove('hidden');
 }
-        function saveData() {
-            localStorage.setItem('springMemories_users', JSON.stringify(app.users));
-            localStorage.setItem('springMemories_notes', JSON.stringify(app.notes));
+        async function saveData() {
+            // Only save settings to localStorage
             localStorage.setItem('springMemories_forceReveal', app.forceReveal.toString());
             localStorage.setItem('springMemories_revealDate', app.revealDate.toISOString());
             if (app.customMasterPassword) {
@@ -561,7 +560,7 @@ async function loadData() {
             }
         }
 
-        function createAccount() {
+        async function createAccount() {
             var name = document.getElementById('newName').value.trim();
             var password = document.getElementById('newPassword').value.trim();
             if (!name || !password || !app.selectedColor) {
@@ -574,8 +573,11 @@ async function loadData() {
                 password: password,
                 color: app.selectedColor
             };
+            
+            // Save to Supabase
+            await app.supabase.from('users').insert([newUser]);
             app.users.push(newUser);
-            saveData();
+            
             alert('Account created! Please log in using your new password.');
             location.reload();
         }
@@ -867,33 +869,35 @@ async function loadData() {
             }
         }
 
-        function removeUser(userId) {
+        async function removeUser(userId) {
             var user = app.users.find(function(u) {
                 return u.id === userId;
             });
-
+        
             if (!user) return;
-
+        
             if (!confirm('Remove ' + user.name + ' and ALL of their memories?')) return;
-
-            // Remove user
+        
+            // Delete from Supabase
+            await app.supabase.from('users').delete().eq('id', userId);
+            await app.supabase.from('memories').delete().eq('user_id', userId);
+        
+            // Remove locally
             app.users = app.users.filter(function(u) {
                 return u.id !== userId;
             });
-
-            // Remove their notes
+        
             app.notes = app.notes.filter(function(note) {
-                return note.userId !== userId;
+                return note.user_id !== userId;
             });
-
-            saveData();
+        
             updateAdminStats();
             updateAdminUserList();
             updateMemoryWall();
-
+        
             alert('User removed.');
-        }        
-
+        }
+        
         function resetAllData() {
             if (!confirm('Are you sure? This will delete ALL users and notes permanently!')) return;
             if (!confirm('Really sure? This cannot be undone!')) return;
@@ -954,7 +958,7 @@ async function loadData() {
             document.getElementById('noteModal').classList.remove('active');
         }
 
-        function saveNote(asDraft) {
+        async function saveNote(asDraft) {
             var title = document.getElementById('noteTitle').value.trim();
             var content = document.getElementById('noteContent').value.trim();
             if (!title || !content) {
@@ -967,23 +971,26 @@ async function loadData() {
                     day: 'numeric',
                     year: 'numeric'
                 });
-
+        
                 if (!confirm('Are you sure? Once submitted, you cannot edit or view this note until ' + revealText + '.')) {
                     return;
                 }
             }
             var note = {
                 id: app.editingDraftId || Date.now().toString(),
-                userId: app.currentUser.id,
+                user_id: app.currentUser.id,
                 title: title,
                 content: content,
                 image: app.imageData,
                 date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
                 timestamp: Date.now(),
-                isDraft: asDraft,
+                is_draft: asDraft,
                 color: app.currentUser.color
             };
+            
             if (app.editingDraftId) {
+                // Update existing
+                await app.supabase.from('memories').update(note).eq('id', app.editingDraftId);
                 for (var i = 0; i < app.notes.length; i++) {
                     if (app.notes[i].id === app.editingDraftId) {
                         app.notes[i] = note;
@@ -991,18 +998,24 @@ async function loadData() {
                     }
                 }
             } else {
+                // Insert new
+                await app.supabase.from('memories').insert([note]);
                 app.notes.push(note);
             }
-            saveData();
+            
             closeNoteModal();
             alert(asDraft ? 'Draft saved!' : 'Memory submitted!');
             updateStats();
             updateDrafts();
             updateMemoryWall();
         }
-
-        function deleteDraft(draftId) {
+        
+        async function deleteDraft(draftId) {
             if (!confirm('Delete this draft?')) return;
+            
+            // Delete from Supabase
+            await app.supabase.from('memories').delete().eq('id', draftId);
+            
             var newNotes = [];
             for (var i = 0; i < app.notes.length; i++) {
                 if (app.notes[i].id !== draftId) {
@@ -1010,11 +1023,10 @@ async function loadData() {
                 }
             }
             app.notes = newNotes;
-            saveData();
             updateDrafts();
             alert('Draft deleted!');
         }
-
+        
         function exportData() {
             var data = {
                 users: app.users,
