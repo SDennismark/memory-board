@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spring Semester Memories</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f5f0ff 0%, #e6f2ff 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+        .center-card {
+            max-width: 500px;
+            margin: 100px auto;
+        }
+        h1 {
+            font-size: 28px;
+            font-weight: 300;
+            color: #333;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        h2 {
+            font-size: 20px;
+            font-weight: 300;
+            color: #333;
+            margin-bottom: 16px;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 16px;
+            font-family: inherit;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #d4c5f9;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        button:active {
+            transform: scale(0.98);
+        }
+        .btn-primary {
+            background: #d4c5f9;
+            color: #333;
+            width: 100%;
+        }
+        .btn-success {
+            background: #b5ead7;
+            color: #333;
+        }
+        .btn-warning {
+            background: #fff9b0;
+            color: #333;
+        }
+        .btn-danger {
+            background: #ffd1dc;
+            color: #333;
+        }
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+        .btn-export {
+            background: #c5e1f5;
+            color: #333;
+        }
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .color-option {
+            padding: 24px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .color-option:hover {
+            border-color: #999;
+        }
+        .color-option.selected {
+            border-color: #333;
+            border-width: 3px;
+        }
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-logout {
+            background: #f0f0f0;
+            color: #333;
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        .btn-logout:hover {
+            background: #e0e0e0;
+        }
+        .stats {
+            display: flex;
+            gap: 24px;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        .small-text {
+            font-size: 12px;
+            color: #999;
+        }
+        .drafts-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .draft-item {
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .draft-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        .draft-buttons button {
+            padding: 6px 12px;
+            font-size: 14px;
+        }
+        .memory-wall {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 8px;
+        }
+        .memory-box {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding: 8px;
+            position: relative;
+        }
+        .memory-box-date {
+            font-size: 10px;
+            color: #333;
+            text-align: center;
+            opacity: 0.7;
+        }
+        .memory-full {
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+        .memory-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .memory-title {
+            font-weight: 500;
+            color: #333;
+        }
+        .memory-date {
+            font-size: 14px;
+            color: #666;
+        }
+        .memory-content {
+            color: #555;
+            margin-bottom: 8px;
+            white-space: pre-wrap;
+        }
+        .memory-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        .memory-author {
+            font-size: 14px;
+            color: #666;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        .modal.active {
+            display: block;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            max-width: 600px;
+            width: 90%;
+            margin: 50px auto;
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+        .modal-buttons button {
+            flex: 1;
+        }
+        .preview-image {
+            max-width: 100%;
+            max-height: 200px;
+            object-fit: contain;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+        .hidden {
+            display: none;
+        }
+        .stat-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            background: #fff;
+        }
+
+        .stat-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .stat-content div {
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="entryScreen" class="card center-card">
+            <h1>Spring Semester Memories</h1>
+            <input type="password" id="entryPassword" placeholder="Enter passcode">
+            <button class="btn-primary" onclick="handleEntry()">Enter</button>
+        </div>
+
+        <div id="createAccountScreen" class="card center-card hidden">
+            <h1>Create Your Account</h1>
+            <input type="text" id="newName" placeholder="Your name">
+            <input type="password" id="newPassword" placeholder="Create a simple password">
+            <p style="font-size: 14px; color: #666; margin-bottom: 8px;">Choose your color:</p>
+            <div class="color-grid" id="colorGrid"></div>
+
+            <p id="noColorsMessage" class="small-text hidden" style="color:#a00;">
+                All available spots have been filled. No new accounts can be created.
+            </p>
+
+            <button class="btn-primary" onclick="createAccount()">Create Account</button>
+        </div>
+
+        <div id="homeScreen" class="hidden">
+            <div class="card">
+                <div class="header-row">
+                    <div class="header-left">
+                        <h1 id="welcomeText" style="margin: 0; text-align: left;">Welcome</h1>
+                        <button class="btn-logout" onclick="logout()">Log Out</button>
+                    </div>
+                </div>
+                <div class="stats" id="statsDisplay"></div>
+                <p class="small-text">Memories will be revealed on: <span id="revealDateDisplay"></span></p>
+            </div>
+
+            <div id="adminControls" class="card hidden">
+                <h2>Admin Controls</h2>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <button class="btn-warning" onclick="forceRevealMemories()">Force Reveal Memories</button>
+                    <button class="btn-export" onclick="exportData()">Export Backup</button>
+                    <button class="btn-danger" onclick="resetAllData()">Reset All Data</button>
+                </div>
+                <div class="admin-date-input">
+                    <label for="adminRevealDate" style="font-size: 14px; color: #666;">Set Reveal Date (CST):</label>
+                    <input type="datetime-local" id="adminRevealDate">
+                    <button class="btn-success" onclick="updateRevealDate()">Update</button>
+                </div>
+                <div class="admin-date-input">
+                    <label for="adminMasterPassword" style="font-size: 14px; color: #666;">New Master Password:</label>
+                    <input type="text" id="adminMasterPassword" placeholder="Leave blank to keep current">
+                    <button class="btn-success" onclick="updateMasterPassword()">Update</button>
+                </div>
+                
+                <div class="stats-section">
+                    <h2>Statistics</h2>
+                    <div id="adminStatsContainer"></div>
+                </div>
+
+                <h2>Manage Accounts</h2>
+                <div id="adminUserList"></div>
+
+            </div>
+
+            <div id="draftsSection" class="card hidden">
+                <h2>Your Drafts</h2>
+                <div class="drafts-list" id="draftsList"></div>
+            </div>
+
+            <div class="card">
+                <div class="header-row">
+                    <h2 id="wallTitle" style="margin: 0;">Memory Wall</h2>
+                    <button class="btn-success" onclick="showNoteModal()">Add Memory</button>
+                </div>
+                <div id="memoryWall"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="noteModal" class="modal">
+        <div class="modal-content">
+            <h2 id="modalTitle">Add a Memory</h2>
+            <input type="text" id="noteTitle" placeholder="Title">
+            <textarea id="noteContent" placeholder="What good thing happened?"></textarea>
+            <input type="file" id="noteImage" accept="image/*">
+            <img id="imagePreview" class="preview-image hidden">
+            <div class="modal-buttons">
+                <button class="btn-warning" onclick="saveNote(true)">Save as Draft</button>
+                <button class="btn-success" onclick="saveNote(false)">Submit</button>
+                <button class="btn-secondary" onclick="closeNoteModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var app = {
+            colors: [
+                { name: 'Lavender', value: '#E6E6FA' },
+                { name: 'Mint', value: '#B5EAD7' },
+                { name: 'Peach', value: '#FFD4B2' },
+                { name: 'Sky', value: '#C5E1F5' },
+                { name: 'Rose', value: '#FFD1DC' },
+                { name: 'Lemon', value: '#FFF9B0' }
+            ],
+            masterPassword: 'spring2026',
+            adminPassword: 'S@luki01T',
+            customMasterPassword: null,
+            revealDate: new Date('2026-05-09'),
+            currentUser: null,
+            users: [],
+            notes: [],
+            selectedColor: null,
+            editingDraftId: null,
+            imageData: null,
+            forceReveal: false
+        };
+
+        function loadData() {
+            var storedUsers = localStorage.getItem('springMemories_users');
+            var storedNotes = localStorage.getItem('springMemories_notes');
+            var storedReveal = localStorage.getItem('springMemories_forceReveal');
+            var storedDate = localStorage.getItem('springMemories_revealDate');
+            var storedMasterPw = localStorage.getItem('springMemories_masterPassword');
+            var storedSession = localStorage.getItem('springMemories_session');
+            
+            app.users = storedUsers ? JSON.parse(storedUsers) : [];
+            app.notes = storedNotes ? JSON.parse(storedNotes) : [];
+            app.forceReveal = storedReveal === 'true';
+            app.revealDate = storedDate ? new Date(storedDate) : new Date('2026-05-09T00:00:00');
+            app.customMasterPassword = storedMasterPw;
+            
+            if (storedSession) {
+                var sessionData = JSON.parse(storedSession);
+                if (sessionData.userId === 'admin') {
+                    app.currentUser = { id: 'admin', name: 'Admin', color: '#cccccc', isAdmin: true };
+                    showHome();
+                    return;
+                } else {
+                    var user = app.users.find(function(u) { return u.id === sessionData.userId; });
+                    if (user) {
+                        app.currentUser = user;
+                        showHome();
+                        return;
+                    }
+                }
+            }
+            
+            document.getElementById('entryScreen').classList.remove('hidden');
+        }
+
+        function saveData() {
+            localStorage.setItem('springMemories_users', JSON.stringify(app.users));
+            localStorage.setItem('springMemories_notes', JSON.stringify(app.notes));
+            localStorage.setItem('springMemories_forceReveal', app.forceReveal.toString());
+            localStorage.setItem('springMemories_revealDate', app.revealDate.toISOString());
+            if (app.customMasterPassword) {
+                localStorage.setItem('springMemories_masterPassword', app.customMasterPassword);
+            }
+        }
+
+        function handleEntry() {
+            var password = document.getElementById('entryPassword').value;
+            var activeMasterPassword = app.customMasterPassword || app.masterPassword;
+            if (password === app.adminPassword) {
+                app.currentUser = { id: 'admin', name: 'Admin', color: '#cccccc', isAdmin: true };
+                saveSession();
+                showHome();
+            } else if (password === activeMasterPassword) {
+                showCreateAccount();
+            } else {
+                var user = null;
+                for (var i = 0; i < app.users.length; i++) {
+                    if (app.users[i].password === password) {
+                        user = app.users[i];
+                        break;
+                    }
+                }
+                if (user) {
+                    app.currentUser = user;
+                    saveSession();
+                    showHome();
+                } else {
+                    alert('Incorrect password');
+                }
+            }
+        }
+
+        function saveSession() {
+            if (app.currentUser) {
+                localStorage.setItem('springMemories_session', JSON.stringify({ userId: app.currentUser.id }));
+            }
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to log out?')) {
+                localStorage.removeItem('springMemories_session');
+                app.currentUser = null;
+                document.getElementById('homeScreen').classList.add('hidden');
+                document.getElementById('entryScreen').classList.remove('hidden');
+                document.getElementById('entryPassword').value = '';
+            }
+        }
+
+        function showCreateAccount() {
+            document.getElementById('entryScreen').classList.add('hidden');
+            document.getElementById('createAccountScreen').classList.remove('hidden');
+            var takenColors = [];
+            for (var i = 0; i < app.users.length; i++) {
+                takenColors.push(app.users[i].color);
+            }
+            var availableColors = [];
+            for (var i = 0; i < app.colors.length; i++) {
+                var found = false;
+                for (var j = 0; j < takenColors.length; j++) {
+                    if (app.colors[i].value === takenColors[j]) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    availableColors.push(app.colors[i]);
+                }
+            }
+            var colorGrid = document.getElementById('colorGrid');
+            var noColorsMessage = document.getElementById('noColorsMessage');
+            var createButton = document.querySelector('#createAccountScreen button');
+            
+            colorGrid.innerHTML = '';
+
+            if (availableColors.length === 0) {
+                noColorsMessage.classList.remove('hidden');
+                createButton.disabled = true;
+                return;
+            } else {
+                 noColorsMessage.classList.add('hidden');
+                createButton.disabled = false;
+            }
+
+            for (var i = 0; i < availableColors.length; i++) {
+                var div = document.createElement('div');
+                div.className = 'color-option';
+                div.style.backgroundColor = availableColors[i].value;
+                div.textContent = availableColors[i].name;
+                div.setAttribute('data-color', availableColors[i].value);
+                div.onclick = function() {
+                    selectColor(this.getAttribute('data-color'));
+                };
+                colorGrid.appendChild(div);
+            }
+        }
+
+        function selectColor(color) {
+            app.selectedColor = color;
+            var options = document.querySelectorAll('.color-option');
+            for (var i = 0; i < options.length; i++) {
+                options[i].classList.remove('selected');
+                if (options[i].getAttribute('data-color') === color) {
+                    options[i].classList.add('selected');
+                }
+            }
+        }
+
+        function createAccount() {
+            var name = document.getElementById('newName').value.trim();
+            var password = document.getElementById('newPassword').value.trim();
+            if (!name || !password || !app.selectedColor) {
+                alert('Please fill in all fields');
+                return;
+            }
+            var newUser = {
+                id: Date.now().toString(),
+                name: name,
+                password: password,
+                color: app.selectedColor
+            };
+            app.users.push(newUser);
+            saveData();
+            alert('Account created! Please log in using your new password.');
+            location.reload();
+        }
+
+        function showHome() {
+            document.getElementById('entryScreen').classList.add('hidden');
+            document.getElementById('createAccountScreen').classList.add('hidden');
+            document.getElementById('homeScreen').classList.remove('hidden');
+            document.getElementById('welcomeText').textContent = 'Welcome, ' + app.currentUser.name;
+            
+            var revealDateDisplay = document.getElementById('revealDateDisplay');
+            revealDateDisplay.textContent = app.revealDate.toLocaleDateString('en-US', { 
+                month: 'long', 
+                day: 'numeric', 
+                year: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit',
+                timeZone: 'America/Chicago'
+            });
+            
+            var adminControls = document.getElementById('adminControls');
+
+            if (app.currentUser.isAdmin) {
+                adminControls.classList.remove('hidden');
+                
+                var adminDateInput = document.getElementById('adminRevealDate');
+                var cstDate = new Date(app.revealDate.toLocaleString('en-US', { timeZone: 'America/Chicago' }));
+                var year = cstDate.getFullYear();
+                var month = String(cstDate.getMonth() + 1).padStart(2, '0');
+                var day = String(cstDate.getDate()).padStart(2, '0');
+                var hours = String(cstDate.getHours()).padStart(2, '0');
+                var minutes = String(cstDate.getMinutes()).padStart(2, '0');
+                adminDateInput.value = year + '-' + month + '-' + day + 'T' + hours + ':' + minutes;
+                
+                updateAdminStats();
+                updateAdminUserList();
+            } else {
+                adminControls.classList.add('hidden'); 
+            }
+            
+            updateStats();
+            updateDrafts();
+            updateMemoryWall();
+        }
+
+        function updateStats() {
+            var myNotes = [];
+            for (var i = 0; i < app.notes.length; i++) {
+                if (app.notes[i].userId === app.currentUser.id && !app.notes[i].isDraft) {
+                    myNotes.push(app.notes[i]);
+                }
+            }
+            var statsHtml = [];
+            statsHtml.push('<div>Your notes: ' + myNotes.length + '</div>');
+            for (var i = 0; i < app.users.length; i++) {
+                if (app.users[i].id !== app.currentUser.id) {
+                    var count = 0;
+                    for (var j = 0; j < app.notes.length; j++) {
+                        if (app.notes[j].userId === app.users[i].id && !app.notes[j].isDraft) {
+                            count++;
+                        }
+                    }
+                    statsHtml.push('<div>' + app.users[i].name + ': ' + count + '</div>');
+                }
+            }
+            document.getElementById('statsDisplay').innerHTML = statsHtml.join('');
+        }
+
+        function updateDrafts() {
+            var myDrafts = [];
+            for (var i = 0; i < app.notes.length; i++) {
+                if (app.notes[i].userId === app.currentUser.id && app.notes[i].isDraft) {
+                    myDrafts.push(app.notes[i]);
+                }
+            }
+            var draftsSection = document.getElementById('draftsSection');
+            var draftsList = document.getElementById('draftsList');
+            if (myDrafts.length === 0) {
+                draftsSection.classList.add('hidden');
+                return;
+            }
+            draftsSection.classList.remove('hidden');
+            draftsList.innerHTML = '';
+            for (var i = 0; i < myDrafts.length; i++) {
+                var div = document.createElement('div');
+                div.className = 'draft-item';
+                div.style.backgroundColor = myDrafts[i].color + '40';
+                div.innerHTML = '<span>' + myDrafts[i].title + '</span>' +
+                    '<div class="draft-buttons">' +
+                    '<button class="btn-secondary" onclick="editDraft(\'' + myDrafts[i].id + '\')">Edit</button>' +
+                    '<button class="btn-danger" onclick="deleteDraft(\'' + myDrafts[i].id + '\')">Delete</button>' +
+                    '</div>';
+                draftsList.appendChild(div);
+            }
+        }
+
+        function updateMemoryWall() {
+            var isRevealed = new Date() >= app.revealDate || app.forceReveal;
+            var submittedNotes = [];
+            for (var i = 0; i < app.notes.length; i++) {
+                if (!app.notes[i].isDraft) {
+                    submittedNotes.push(app.notes[i]);
+                }
+            }
+            var wall = document.getElementById('memoryWall');
+            if (isRevealed) {
+                document.getElementById('wallTitle').textContent = 'All Memories';
+                wall.className = '';
+                wall.innerHTML = '';
+                submittedNotes.sort(function(a, b) {
+                    return a.timestamp - b.timestamp;
+                });
+                for (var i = 0; i < submittedNotes.length; i++) {
+                    var note = submittedNotes[i];
+                    var div = document.createElement('div');
+                    div.className = 'memory-full';
+                    div.style.backgroundColor = note.color;
+                    var user = null;
+                    for (var j = 0; j < app.users.length; j++) {
+                        if (app.users[j].id === note.userId) {
+                            user = app.users[j];
+                            break;
+                        }
+                    }
+                    var imageHtml = note.image ? '<img src="' + note.image + '" class="memory-image">' : '';
+                    div.innerHTML = '<div class="memory-header">' +
+                        '<span class="memory-title">' + note.title + '</span>' +
+                        '<span class="memory-date">' + note.date + '</span>' +
+                        '</div>' +
+                        '<p class="memory-content">' + note.content + '</p>' +
+                        imageHtml +
+                        '<p class="memory-author">by ' + (user ? user.name : 'Unknown') + '</p>';
+                    wall.appendChild(div);
+                }
+            } else {
+                document.getElementById('wallTitle').textContent = 'Memory Wall';
+                wall.className = 'memory-wall';
+                wall.innerHTML = '';
+                submittedNotes.sort(function(a, b) {
+                    return b.timestamp - a.timestamp;
+                });
+                for (var i = 0; i < submittedNotes.length; i++) {
+                    var div = document.createElement('div');
+                    div.className = 'memory-box';
+                    div.style.backgroundColor = submittedNotes[i].color;
+                    var dateSpan = document.createElement('span');
+                    dateSpan.className = 'memory-box-date';
+                    dateSpan.textContent = submittedNotes[i].date;
+                    div.appendChild(dateSpan);
+                    wall.appendChild(div);
+                }
+            }
+        }
+
+        function forceRevealMemories() {
+            if (!confirm('Force reveal all memories now?')) return;
+            app.forceReveal = true;
+            saveData();
+            updateMemoryWall();
+            alert('Memories revealed!');
+        }
+
+        function updateRevealDate() {
+            var dateInput = document.getElementById('adminRevealDate').value;
+            if (!dateInput) {
+                alert('Please select a date and time');
+                return;
+            }
+            var cstDate = new Date(dateInput + ':00');
+            var utcDate = new Date(cstDate.toLocaleString('en-US', { timeZone: 'UTC' }));
+            app.revealDate = new Date(dateInput);
+            saveData();
+            
+            var revealDateDisplay = document.getElementById('revealDateDisplay');
+            revealDateDisplay.textContent = app.revealDate.toLocaleDateString('en-US', { 
+                month: 'long', 
+                day: 'numeric', 
+                year: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit',
+                timeZone: 'America/Chicago'
+            });
+            
+            alert('Reveal date updated!');
+            updateMemoryWall();
+        }
+
+        function updateMasterPassword() {
+            var newPassword = document.getElementById('adminMasterPassword').value.trim();
+            if (!newPassword) {
+                alert('Please enter a new master password');
+                return;
+            }
+            app.customMasterPassword = newPassword;
+            saveData();
+            document.getElementById('adminMasterPassword').value = '';
+            alert('Master password updated to: ' + newPassword);
+        }
+
+        function updateAdminStats() {
+            var container = document.getElementById('adminStatsContainer');
+            container.innerHTML = '';
+            
+            var submittedNotes = [];
+            for (var i = 0; i < app.notes.length; i++) {
+                if (!app.notes[i].isDraft) {
+                    submittedNotes.push(app.notes[i]);
+                }
+            }
+            
+            var userStats = {};
+            for (var i = 0; i < app.users.length; i++) {
+                userStats[app.users[i].id] = {
+                    name: app.users[i].name,
+                    color: app.users[i].color,
+                    total: 0,
+                    dates: {}
+                };
+            }
+            
+            for (var i = 0; i < submittedNotes.length; i++) {
+                var note = submittedNotes[i];
+                if (userStats[note.userId]) {
+                    userStats[note.userId].total++;
+                    var dateKey = note.date;
+                    if (!userStats[note.userId].dates[dateKey]) {
+                        userStats[note.userId].dates[dateKey] = 0;
+                    }
+                    userStats[note.userId].dates[dateKey]++;
+                }
+            }
+                        
+            for (var userId in userStats) {
+                var stat = userStats[userId];
+                var bestDays = [];
+                var bestDayCount = 0;
+                
+                for (var date in stat.dates) {
+                    if (stat.dates[date] > bestDayCount) {
+                        bestDayCount = stat.dates[date];
+                        bestDays = [date];
+                    } else if (stat.dates[date] === bestDayCount && bestDayCount > 0) {
+                        bestDays.push(date);
+                    }
+                }
+                
+                var userCard = document.createElement('div');
+                userCard.className = 'stat-card';
+                
+                var bestDayText = '';
+                if (bestDays.length === 0) {
+                    bestDayText = '<div>No memories yet</div>';
+                } else if (bestDays.length === 1) {
+                    bestDayText = '<div>Best day: ' + bestDays[0] + ' (' + bestDayCount + ' good moments)</div>';
+                } else {
+                    bestDayText = '<div>Best days (tied with ' + bestDayCount + ' good moments each):</div>';
+                    for (var i = 0; i < bestDays.length; i++) {
+                        bestDayText += '<div style="margin-left: 20px;">- ' + bestDays[i] + '</div>';
+                    }
+                }
+                
+                userCard.innerHTML = '<div class="stat-title">' + stat.name + '</div>' +
+                    '<div class="stat-content">' +
+                    '<div>Total memories: ' + stat.total + '</div>' +
+                    bestDayText +
+                    '</div>';
+                container.appendChild(userCard);
+            }
+        }
+
+        function updateAdminUserList() {
+            var container = document.getElementById('adminUserList');
+            container.innerHTML = '';
+
+            for (var i = 0; i < app.users.length; i++) {
+                var user = app.users[i];
+
+                var div = document.createElement('div');
+                div.style.display = 'flex';
+                div.style.justifyContent = 'space-between';
+                div.style.alignItems = 'center';
+                div.style.marginBottom = '8px';
+
+                div.innerHTML =
+                    '<span>' + user.name + '</span>' +
+                    '<button class="btn-danger" onclick="removeUser(\'' + user.id + '\')">Remove</button>';
+
+                 container.appendChild(div);
+            }
+        }
+
+        function removeUser(userId) {
+            var user = app.users.find(function(u) {
+                return u.id === userId;
+            });
+
+            if (!user) return;
+
+            if (!confirm('Remove ' + user.name + ' and ALL of their memories?')) return;
+
+            // Remove user
+            app.users = app.users.filter(function(u) {
+                return u.id !== userId;
+            });
+
+            // Remove their notes
+            app.notes = app.notes.filter(function(note) {
+                return note.userId !== userId;
+            });
+
+            saveData();
+            updateAdminStats();
+            updateAdminUserList();
+            updateMemoryWall();
+
+            alert('User removed.');
+        }        
+
+        function resetAllData() {
+            if (!confirm('Are you sure? This will delete ALL users and notes permanently!')) return;
+            if (!confirm('Really sure? This cannot be undone!')) return;
+            
+            var newPassword = prompt('Enter a new master password for the next session:');
+            if (!newPassword) {
+                alert('Reset cancelled - no password provided');
+                return;
+            }
+            
+            app.users = [];
+            app.notes = [];
+            app.forceReveal = false;
+            app.revealDate = new Date('2026-05-09T00:00:00');
+            app.customMasterPassword = newPassword;
+            localStorage.removeItem('springMemories_users');
+            localStorage.removeItem('springMemories_notes');
+            localStorage.removeItem('springMemories_forceReveal');
+            localStorage.removeItem('springMemories_revealDate');
+            localStorage.setItem('springMemories_masterPassword', newPassword);
+            alert('All data has been reset! New master password is: ' + newPassword);
+            location.reload();
+        }
+
+        function showNoteModal() {
+            app.editingDraftId = null;
+            app.imageData = null;
+            document.getElementById('modalTitle').textContent = 'Add a Memory';
+            document.getElementById('noteTitle').value = '';
+            document.getElementById('noteContent').value = '';
+            document.getElementById('noteImage').value = '';
+            document.getElementById('imagePreview').classList.add('hidden');
+            document.getElementById('noteModal').classList.add('active');
+        }
+
+        function editDraft(draftId) {
+            var draft = null;
+            for (var i = 0; i < app.notes.length; i++) {
+                if (app.notes[i].id === draftId) {
+                    draft = app.notes[i];
+                    break;
+                }
+            }
+            if (!draft) return;
+            app.editingDraftId = draftId;
+            app.imageData = draft.image || null;
+            document.getElementById('modalTitle').textContent = 'Edit Draft';
+            document.getElementById('noteTitle').value = draft.title;
+            document.getElementById('noteContent').value = draft.content;
+            if (draft.image) {
+                document.getElementById('imagePreview').src = draft.image;
+                document.getElementById('imagePreview').classList.remove('hidden');
+            }
+            document.getElementById('noteModal').classList.add('active');
+        }
+
+        function closeNoteModal() {
+            document.getElementById('noteModal').classList.remove('active');
+        }
+
+        function saveNote(asDraft) {
+            var title = document.getElementById('noteTitle').value.trim();
+            var content = document.getElementById('noteContent').value.trim();
+            if (!title || !content) {
+                alert('Please fill in title and content');
+                return;
+            }
+            if (!asDraft) {
+                var revealText = app.revealDate.toLocaleDateString('en-US', {
+                    month: 'long',
+                    day: 'numeric',
+                    year: 'numeric'
+                });
+
+                if (!confirm('Are you sure? Once submitted, you cannot edit or view this note until ' + revealText + '.')) {
+                    return;
+                }
+            }
+            var note = {
+                id: app.editingDraftId || Date.now().toString(),
+                userId: app.currentUser.id,
+                title: title,
+                content: content,
+                image: app.imageData,
+                date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                timestamp: Date.now(),
+                isDraft: asDraft,
+                color: app.currentUser.color
+            };
+            if (app.editingDraftId) {
+                for (var i = 0; i < app.notes.length; i++) {
+                    if (app.notes[i].id === app.editingDraftId) {
+                        app.notes[i] = note;
+                        break;
+                    }
+                }
+            } else {
+                app.notes.push(note);
+            }
+            saveData();
+            closeNoteModal();
+            alert(asDraft ? 'Draft saved!' : 'Memory submitted!');
+            updateStats();
+            updateDrafts();
+            updateMemoryWall();
+        }
+
+        function deleteDraft(draftId) {
+            if (!confirm('Delete this draft?')) return;
+            var newNotes = [];
+            for (var i = 0; i < app.notes.length; i++) {
+                if (app.notes[i].id !== draftId) {
+                    newNotes.push(app.notes[i]);
+                }
+            }
+            app.notes = newNotes;
+            saveData();
+            updateDrafts();
+            alert('Draft deleted!');
+        }
+
+        function exportData() {
+            var data = {
+                users: app.users,
+                notes: app.notes,
+                revealDate: '2026-05-09',
+                exportDate: new Date().toISOString()
+            };
+            var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'spring-memories-backup-' + new Date().toISOString().split('T')[0] + '.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        document.getElementById('noteImage').addEventListener('change', function(event) {
+            var file = event.target.files[0];
+            if (!file) return;
+            if (file.size > 5000000) {
+                alert('Image is too large. Please choose an image smaller than 5MB.');
+                event.target.value = '';
+                return;
+            }
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                app.imageData = e.target.result;
+                document.getElementById('imagePreview').src = app.imageData;
+                document.getElementById('imagePreview').classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        });
+
+        loadData();
+    </script>
+</body>
+</html>
