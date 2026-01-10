@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spring Semester Memories</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * {
             margin: 0;
@@ -384,6 +385,7 @@
 
     <script>
         var app = {
+            supabase: null,
             colors: [
                 { name: 'Lavender', value: '#E6E6FA' },
                 { name: 'Mint', value: '#B5EAD7' },
@@ -405,39 +407,48 @@
             forceReveal: false
         };
 
-        function loadData() {
-            var storedUsers = localStorage.getItem('springMemories_users');
-            var storedNotes = localStorage.getItem('springMemories_notes');
-            var storedReveal = localStorage.getItem('springMemories_forceReveal');
-            var storedDate = localStorage.getItem('springMemories_revealDate');
-            var storedMasterPw = localStorage.getItem('springMemories_masterPassword');
-            var storedSession = localStorage.getItem('springMemories_session');
-            
-            app.users = storedUsers ? JSON.parse(storedUsers) : [];
-            app.notes = storedNotes ? JSON.parse(storedNotes) : [];
-            app.forceReveal = storedReveal === 'true';
-            app.revealDate = storedDate ? new Date(storedDate) : new Date('2026-05-09T00:00:00');
-            app.customMasterPassword = storedMasterPw;
-            
-            if (storedSession) {
-                var sessionData = JSON.parse(storedSession);
-                if (sessionData.userId === 'admin') {
-                    app.currentUser = { id: 'admin', name: 'Admin', color: '#cccccc', isAdmin: true };
-                    showHome();
-                    return;
-                } else {
-                    var user = app.users.find(function(u) { return u.id === sessionData.userId; });
-                    if (user) {
-                        app.currentUser = user;
-                        showHome();
-                        return;
-                    }
-                }
+async function loadData() {
+    // Initialize Supabase
+    var SUPABASE_URL = 'https://kawottvilywvynbrvros.supabase.co';
+    var SUPABASE_KEY = 'sb_publishable_LIu7ZrdLY9DnBpiAja6w9Q_U2WNI2sl';
+    app.supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    
+    // Keep localStorage for session only
+    var storedSession = localStorage.getItem('springMemories_session');
+    var storedMasterPw = localStorage.getItem('springMemories_masterPassword');
+    var storedReveal = localStorage.getItem('springMemories_forceReveal');
+    var storedDate = localStorage.getItem('springMemories_revealDate');
+    
+    app.customMasterPassword = storedMasterPw;
+    app.forceReveal = storedReveal === 'true';
+    app.revealDate = storedDate ? new Date(storedDate) : new Date('2026-05-09T00:00:00');
+    
+    // Load users from Supabase
+    var { data: users } = await app.supabase.from('users').select('*');
+    app.users = users || [];
+    
+    // Load notes from Supabase
+    var { data: notes } = await app.supabase.from('memories').select('*');
+    app.notes = notes || [];
+    
+    if (storedSession) {
+        var sessionData = JSON.parse(storedSession);
+        if (sessionData.userId === 'admin') {
+            app.currentUser = { id: 'admin', name: 'Admin', color: '#cccccc', isAdmin: true };
+            showHome();
+            return;
+        } else {
+            var user = app.users.find(function(u) { return u.id === sessionData.userId; });
+            if (user) {
+                app.currentUser = user;
+                showHome();
+                return;
             }
-            
-            document.getElementById('entryScreen').classList.remove('hidden');
         }
-
+    }
+    
+    document.getElementById('entryScreen').classList.remove('hidden');
+}
         function saveData() {
             localStorage.setItem('springMemories_users', JSON.stringify(app.users));
             localStorage.setItem('springMemories_notes', JSON.stringify(app.notes));
