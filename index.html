@@ -916,26 +916,19 @@ async function loadData() {
             }
         }
         async function removeUser(userId) {
-            var user = app.users.find(function(u) {
-                return u.id === userId;
-            });
+            const { data, error } = await app.supabase
+                .from('users')
+                .delete()
+                .eq('id', userId)
+                .select();
         
-            if (!user) return;
+            if (!confirm('Remove user and all their memories?')) return;
         
-            if (!confirm('Remove ' + user.name + ' and ALL of their memories?')) return;
-        
-            // Delete memories first
+            // Delete memories
             await app.supabase
                 .from('memories')
                 .delete()
                 .eq('user_id', userId)
-                .select();
-        
-            // Delete user
-            await app.supabase
-                .from('users')
-                .delete()
-                .eq('id', userId)
                 .select();
         
             // Remove locally
@@ -951,9 +944,8 @@ async function loadData() {
             updateAdminUserList();
             updateMemoryWall();
         
-            alert('User and all their memories removed.');
+            alert('User removed.');
         }
-
         function showNoteModal() {
             app.editingDraftId = null;
             app.imageData = null;
