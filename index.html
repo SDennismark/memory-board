@@ -916,7 +916,17 @@ async function loadData() {
             }
         }
         async function removeUser(userId) {
-            alert('removeUser fired with id: ' + userId);
+            console.log('Attempting delete for:', userId);
+        
+            const { data, error } = await app.supabase
+                .from('users')
+                .delete()
+                .eq('id', userId)
+                .select();
+        
+            console.log('Delete result:', data, error);
+        
+            alert('Delete attempted — check console');
         }
 
         function showNoteModal() {
