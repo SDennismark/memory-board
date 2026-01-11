@@ -413,14 +413,25 @@ async function loadData() {
     var SUPABASE_URL = 'https://kawottvilywvynbrvros.supabase.co';
     var SUPABASE_KEY = 'sb_publishable_LIu7ZrdLY9DnBpiAja6w9Q_U2WNI2sl';
     app.supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // 2. LOAD MASTER PASSWORD (ONLY SOURCE OF TRUTH)
+    const { data, error } = await app.supabase
+        .from('settings')
+        .select('value')
+        .eq('key', 'master_password')
+        .single();
+
+    if (error) {
+        console.error('Failed to load master password', error);
+    } else {
+        app.customMasterPassword = data.value;
+    }
     
     // Keep localStorage for session only
     var storedSession = localStorage.getItem('springMemories_session');
-    var storedMasterPw = localStorage.getItem('springMemories_masterPassword');
     var storedReveal = localStorage.getItem('springMemories_forceReveal');
     var storedDate = localStorage.getItem('springMemories_revealDate');
     
-    app.customMasterPassword = storedMasterPw;
     app.forceReveal = storedReveal === 'true';
     app.revealDate = storedDate ? new Date(storedDate) : new Date('2026-05-09T00:00:00');
     
@@ -812,16 +823,24 @@ async function loadData() {
             updateMemoryWall();
         }
 
-        async function updateMasterPassword() {
-            var newPassword = document.getElementById('adminMasterPassword').value.trim();
-            if (!newPassword) {
-                alert('Please enter a new master password');
+        async function updateMasterPassword(newPassword) {
+            if (!newPassword) return;
+        
+            const { error } = await app.supabase
+                .from('settings')
+                .update({ value: newPassword })
+                .eq('key', 'master_password');
+        
+            if (error) {
+                alert('Failed to update master password');
+                console.error(error);
                 return;
             }
+        
+            // Update in-memory copy so it works immediately
             app.customMasterPassword = newPassword;
-            localStorage.setItem('springMemories_masterPassword', newPassword);
-            document.getElementById('adminMasterPassword').value = '';
-            alert('Master password updated to: ' + newPassword);
+        
+            alert('Master password updated');
         }
 
         function updateAdminStats() {
