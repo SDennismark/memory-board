@@ -888,7 +888,7 @@ async function loadData() {
             });
         
             app.notes = app.notes.filter(function(note) {
-                return note.user_id !== userId;
+                return note.userId !== userId;
             });
         
             updateAdminStats();
