@@ -448,29 +448,7 @@ async function loadData() {
     }
     
     document.getElementById('entryScreen').classList.remove('hidden');
-
-    // Auto-refresh data every 5 seconds to get new posts
-    setInterval(async function() {
-        if (app.currentUser) {
-            var { data: notes } = await app.supabase.from('memories').select('*');
-            if (notes) {
-                app.notes = notes;
-                updateStats();
-                updateDrafts();
-                updateMemoryWall();
-            }
-            
-            var { data: users } = await app.supabase.from('users').select('*');
-            if (users) {
-                app.users = users;
-                if (app.currentUser.isAdmin) {
-                    updateAdminUserList();
-                    updateAdminStats();
-                }
-            }
-        }
-    }, 5000); // Check every 5 seconds
-}
+    }
         async function saveData() {
             // Only save settings to localStorage
             localStorage.setItem('springMemories_forceReveal', app.forceReveal.toString());
@@ -643,6 +621,26 @@ async function loadData() {
             updateStats();
             updateDrafts();
             updateMemoryWall();
+            
+            // Auto-refresh data every 5 seconds to get new posts
+            setInterval(async function() {
+                var { data: notes } = await app.supabase.from('memories').select('*');
+                if (notes) {
+                    app.notes = notes;
+                    updateStats();
+                    updateDrafts();
+                    updateMemoryWall();
+                }
+                
+                var { data: users } = await app.supabase.from('users').select('*');
+                if (users) {
+                    app.users = users;
+                    if (app.currentUser.isAdmin) {
+                        updateAdminUserList();
+                        updateAdminStats();
+                    }
+                }
+            }, 5000);
         }
 
         function updateStats() {
