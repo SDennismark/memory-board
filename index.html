@@ -448,6 +448,59 @@ async function loadData() {
     }
     
     document.getElementById('entryScreen').classList.remove('hidden');
+
+    // Set up real-time subscription for memories
+    app.supabase
+        .channel('memories-channel')
+        .on('postgres_changes', 
+            { event: '*', schema: 'public', table: 'memories' }, 
+            function(payload) {
+                console.log('Change received!', payload);
+                
+                if (payload.eventType === 'INSERT') {
+                    app.notes.push(payload.new);
+                } else if (payload.eventType === 'UPDATE') {
+                    for (var i = 0; i < app.notes.length; i++) {
+                        if (app.notes[i].id === payload.new.id) {
+                            app.notes[i] = payload.new;
+                            break;
+                        }
+                    }
+                } else if (payload.eventType === 'DELETE') {
+                    app.notes = app.notes.filter(function(note) {
+                        return note.id !== payload.old.id;
+                    });
+                }
+                
+                updateStats();
+                updateDrafts();
+                updateMemoryWall();
+            }
+        )
+        .subscribe();
+    
+    // Set up real-time subscription for users
+    app.supabase
+        .channel('users-channel')
+        .on('postgres_changes', 
+            { event: '*', schema: 'public', table: 'users' }, 
+            function(payload) {
+                if (payload.eventType === 'INSERT') {
+                    app.users.push(payload.new);
+                } else if (payload.eventType === 'DELETE') {
+                    app.users = app.users.filter(function(u) {
+                        return u.id !== payload.old.id;
+                    });
+                }
+                
+                updateStats();
+                if (app.currentUser && app.currentUser.isAdmin) {
+                    updateAdminUserList();
+                    updateAdminStats();
+                }
+            }
+        )
+        .subscribe();
 }
         async function saveData() {
             // Only save settings to localStorage
