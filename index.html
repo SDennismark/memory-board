@@ -340,7 +340,14 @@
                 <div class="admin-date-input">
                     <label for="adminMasterPassword" style="font-size: 14px; color: #666;">New Master Password:</label>
                     <input type="text" id="adminMasterPassword" placeholder="Leave blank to keep current">
-                    <button class="btn-success" onclick="updateMasterPassword()">Update</button>
+                    <button
+                      type="button"
+                      class="btn-success"
+                      onclick="updateMasterPassword(
+                        document.getElementById('adminMasterPassword').value
+                      )">
+                      Update
+                    </button>
                 </div>
                 
                 <div class="stats-section">
@@ -824,6 +831,7 @@ async function loadData() {
         }
 
         async function updateMasterPassword(newPassword) {
+            console.log('Updating master password');
             if (!newPassword) return;
         
             const { error } = await app.supabase
