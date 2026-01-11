@@ -916,55 +916,7 @@ async function loadData() {
             }
         }
         async function removeUser(userId) {
-            // Admin-only guard
-            if (!app.currentUser.isAdmin) return;
-        
-            const user = app.users.find(u => u.id === userId);
-            if (!user) return;
-        
-            if (!confirm(`Remove ${user.name}? This cannot be undone.`)) return;
-        
-            const { error } = await app.supabase
-                .from('users')
-                .delete()
-                .eq('id', userId);
-        
-            if (error) {
-                console.error(error);
-                alert('Failed to remove user.');
-                return;
-            }
-        
-            // Update local state immediately
-            app.users = app.users.filter(u => u.id !== userId);
-        
-            updateAdminUserList();
-            updateAdminStats();
-        }
-
-        
-        function resetAllData() {
-            if (!confirm('Are you sure? This will delete ALL users and notes permanently!')) return;
-            if (!confirm('Really sure? This cannot be undone!')) return;
-            
-            var newPassword = prompt('Enter a new master password for the next session:');
-            if (!newPassword) {
-                alert('Reset cancelled - no password provided');
-                return;
-            }
-            
-            app.users = [];
-            app.notes = [];
-            app.forceReveal = false;
-            app.revealDate = new Date('2026-05-09T00:00:00');
-            app.customMasterPassword = newPassword;
-            localStorage.removeItem('springMemories_users');
-            localStorage.removeItem('springMemories_notes');
-            localStorage.removeItem('springMemories_forceReveal');
-            localStorage.removeItem('springMemories_revealDate');
-            localStorage.setItem('springMemories_masterPassword', newPassword);
-            alert('All data has been reset! New master password is: ' + newPassword);
-            location.reload();
+            alert('removeUser fired with id: ' + userId);
         }
 
         function showNoteModal() {
