@@ -404,7 +404,8 @@
             selectedColor: null,
             editingDraftId: null,
             imageData: null,
-            forceReveal: false
+            forceReveal: false,
+            lastNotesUpdate: null
         };
 
 async function loadData() {
@@ -621,26 +622,52 @@ async function loadData() {
             updateStats();
             updateDrafts();
             updateMemoryWall();
+
+            setInterval(async function () {
             
-            // Auto-refresh data every 5 seconds to get new posts
-            setInterval(async function() {
-                var { data: notes } = await app.supabase.from('memories').select('*');
-                if (notes) {
+                // ---- NOTES ----
+                const { data: notes, error: notesError } = await app.supabase
+                    .from('memories')
+                    .select('*')
+                    .order('created_at', { ascending: true });
+            
+                if (notesError) {
+                    console.error('Notes error:', notesError);
+                    return;
+                }
+            
+                if (
+                    !app.lastNotesUpdate ||
+                    notes.length !== app.notes.length ||
+                    notes[notes.length - 1]?.created_at !== app.lastNotesUpdate
+                ) {
                     app.notes = notes;
+                    app.lastNotesUpdate = notes[notes.length - 1]?.created_at;
+            
                     updateStats();
                     updateDrafts();
                     updateMemoryWall();
                 }
-                
-                var { data: users } = await app.supabase.from('users').select('*');
-                if (users) {
-                    app.users = users;
-                    if (app.currentUser.isAdmin) {
-                        updateAdminUserList();
-                        updateAdminStats();
-                    }
+            
+                // ---- USERS ----
+                const { data: users, error: usersError } = await app.supabase
+                    .from('users')
+                    .select('*');
+            
+                if (usersError) {
+                    console.error('Users error:', usersError);
+                    return;
                 }
+            
+                app.users = users;
+            
+                if (app.currentUser && app.currentUser.isAdmin) {
+                    updateAdminUserList();
+                    updateAdminStats();
+                }
+            
             }, 5000);
+
         }
 
         function updateStats() {
