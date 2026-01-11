@@ -880,7 +880,7 @@ async function loadData() {
         
             // Delete from Supabase
             await app.supabase.from('users').delete().eq('id', userId);
-            await app.supabase.from('memories').delete().eq('user_id', userId);
+            await app.supabase.from('memories').delete().eq('userId', userId);
         
             // Remove locally
             app.users = app.users.filter(function(u) {
@@ -978,13 +978,13 @@ async function loadData() {
             }
             var note = {
                 id: app.editingDraftId || Date.now().toString(),
-                user_id: app.currentUser.id,
+                userId: app.currentUser.id,
                 title: title,
                 content: content,
                 image: app.imageData,
                 date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
                 timestamp: Date.now(),
-                is_draft: asDraft,
+                isDraft: asDraft,
                 color: app.currentUser.color
             };
             
