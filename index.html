@@ -944,7 +944,7 @@ async function loadData() {
                 document.getElementById('usagePercent').textContent = percentUsed;
                 document.getElementById('usageSize').textContent = usedMB.toFixed(2);
                 
-                if (percentUsed >= 0) {
+                if (percentUsed >= 75) {
                     warningDiv.style.display = 'block';
                     warningDiv.style.background = percentUsed >= 90 ? '#ffd1dc' : '#fff9b0';
                 } else {
