@@ -439,12 +439,14 @@ async function loadData() {
     
     // Keep localStorage for session only
     var storedSession = localStorage.getItem('springMemories_session');
-    var storedReveal = localStorage.getItem('springMemories_forceReveal');
-    var storedDate = localStorage.getItem('springMemories_revealDate');
+    // Load force reveal from Supabase
+    var { data: forceRevealData } = await app.supabase.from('settings').select('value').eq('key', 'force_reveal').single();
+    app.forceReveal = forceRevealData ? forceRevealData.value === 'true' : false;
     
-    app.forceReveal = storedReveal === 'true';
-    app.revealDate = storedDate ? new Date(storedDate) : new Date('2026-05-09T00:00:00');
-    
+    // Load reveal date from Supabase
+    var { data: revealDateData } = await app.supabase.from('settings').select('value').eq('key', 'reveal_date').single();
+    app.revealDate = revealDateData ? new Date(revealDateData.value) : new Date('2026-05-09T00:00:00');
+        
     // Load users from Supabase
     var { data: users } = await app.supabase.from('users').select('*');
     app.users = users || [];
@@ -472,9 +474,6 @@ async function loadData() {
     document.getElementById('entryScreen').classList.remove('hidden');
     }
         async function saveData() {
-            // Only save settings to localStorage
-            localStorage.setItem('springMemories_forceReveal', app.forceReveal.toString());
-            localStorage.setItem('springMemories_revealDate', app.revealDate.toISOString());
             if (app.customMasterPassword) {
                 localStorage.setItem('springMemories_masterPassword', app.customMasterPassword);
             }
@@ -801,24 +800,27 @@ async function loadData() {
             }
         }
 
-        function forceRevealMemories() {
+        async function forceRevealMemories() {
             if (!confirm('Force reveal all memories now?')) return;
             app.forceReveal = true;
-            saveData();
+            
+            await app.supabase.from('settings').update({ value: 'true' }).eq('key', 'force_reveal');
+            
             updateMemoryWall();
             alert('Memories revealed!');
         }
 
-        function updateRevealDate() {
+        async function updateRevealDate() {
             var dateInput = document.getElementById('adminRevealDate').value;
             if (!dateInput) {
                 alert('Please select a date and time');
                 return;
             }
-            var cstDate = new Date(dateInput + ':00');
-            var utcDate = new Date(cstDate.toLocaleString('en-US', { timeZone: 'UTC' }));
+            
             app.revealDate = new Date(dateInput);
-            saveData();
+            
+            // Save to Supabase
+            await app.supabase.from('settings').update({ value: app.revealDate.toISOString() }).eq('key', 'reveal_date');
             
             var revealDateDisplay = document.getElementById('revealDateDisplay');
             revealDateDisplay.textContent = app.revealDate.toLocaleDateString('en-US', { 
