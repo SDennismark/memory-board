@@ -327,6 +327,9 @@
 
             <div id="adminControls" class="card hidden">
                 <h2>Admin Controls</h2>
+                <div id="usageWarning" style="display:none; background:#fff9b0; padding:12px; border-radius:8px; margin-bottom:16px;">
+                    ⚠️ Database usage: <span id="usagePercent"></span>% full (<span id="usageSize"></span> MB used)
+                </div>
                 <div style="display: flex; gap: 12px; flex-wrap: wrap;">
                     <button class="btn-warning" onclick="forceRevealMemories()">Force Reveal Memories</button>
                     <button class="btn-export" onclick="exportData()">Export Backup</button>
@@ -630,7 +633,8 @@ async function loadData() {
                 var hours = String(cstDate.getHours()).padStart(2, '0');
                 var minutes = String(cstDate.getMinutes()).padStart(2, '0');
                 adminDateInput.value = year + '-' + month + '-' + day + 'T' + hours + ':' + minutes;
-                
+
+                checkDatabaseUsage();
                 updateAdminStats();
                 updateAdminUserList();
             } else {
@@ -919,6 +923,33 @@ async function loadData() {
                     bestDayText +
                     '</div>';
                 container.appendChild(userCard);
+            }
+        }
+        function checkDatabaseUsage() {
+            // Calculate approximate size
+            var totalSize = 0;
+            for (var i = 0; i < app.notes.length; i++) {
+                var note = app.notes[i];
+                totalSize += (note.image || '').length;
+                totalSize += (note.title || '').length;
+                totalSize += (note.content || '').length;
+            }
+            
+            var usedMB = (totalSize / 1024 / 1024) + 24.83;
+            var maxMB = 500;
+            var percentUsed = Math.round((usedMB / maxMB) * 100);
+            
+            var warningDiv = document.getElementById('usageWarning');
+            if (warningDiv) {
+                document.getElementById('usagePercent').textContent = percentUsed;
+                document.getElementById('usageSize').textContent = usedMB.toFixed(2);
+                
+                if (percentUsed >= 0) {
+                    warningDiv.style.display = 'block';
+                    warningDiv.style.background = percentUsed >= 90 ? '#ffd1dc' : '#fff9b0';
+                } else {
+                    warningDiv.style.display = 'none';
+                }
             }
         }
 
