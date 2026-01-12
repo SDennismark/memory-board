@@ -1104,9 +1104,25 @@ async function loadData() {
             }
             var reader = new FileReader();
             reader.onload = function(e) {
-                app.imageData = e.target.result;
-                document.getElementById('imagePreview').src = app.imageData;
-                document.getElementById('imagePreview').classList.remove('hidden');
+                var img = new Image();
+                img.onload = function() {
+                    var canvas = document.createElement('canvas');
+                    var ctx = canvas.getContext('2d');
+                    
+                    // Compress to max 800px width
+                    var maxWidth = 800;
+                    var scale = maxWidth / img.width;
+                    canvas.width = maxWidth;
+                    canvas.height = img.height * scale;
+                    
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    
+                    // Compress to 70% quality
+                    app.imageData = canvas.toDataURL('image/jpeg', 0.7);
+                    document.getElementById('imagePreview').src = app.imageData;
+                    document.getElementById('imagePreview').classList.remove('hidden');
+                };
+                img.src = e.target.result;
             };
             reader.readAsDataURL(file);
         });
